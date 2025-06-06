@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Креативная визитка</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap");
+
+      :root {
+        --primary: #ff2d75;
+        --secondary: #2b2b2b;
+        --accent: #00f0ff;
+        --text: #f8f8f8;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--secondary);
+        color: var(--text);
+        overflow-x: hidden;
+        perspective: 1000px;
+      }
+
+      .cursor {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgba(255, 45, 117, 0.5);
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        mix-blend-mode: difference;
+        transform: translate(-50%, -50%);
+        transition: transform 0.1s ease;
+      }
+
+      .cursor-follower {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: var(--accent);
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        mix-blend-mode: difference;
+        transform: translate(-50%, -50%);
+        transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+      }
+
+      header {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          var(--primary) 0%,
+          transparent 70%
+        );
+        opacity: 0.2;
+        z-index: -1;
+        animation: pulse 15s infinite alternate;
+      }
+
+      .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        background-color: var(--accent);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float linear infinite;
+      }
+
+      h1 {
+        font-size: 5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 20px rgba(255, 45, 117, 0.3);
+        transform: translateY(50px);
+        opacity: 0;
+        animation: fadeInUp 1s forwards 0.5s;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 1s forwards 0.7s;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background: transparent;
+        color: var(--text);
+        border: 2px solid var(--primary);
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        z-index: 1;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 1s forwards 0.9s;
+      }
+
+      .btn:hover {
+        color: var(--secondary);
+        border-color: var(--accent);
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--primary),
+          transparent
+        );
+        transition: all 0.6s;
+        z-index: -1;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 100%;
+        height: 100%;
+        background: var(--accent);
+        border-radius: 50px;
+        transition: all 0.4s;
+        z-index: -2;
+      }
+
+      .btn:hover::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        background-color: rgba(43, 43, 43, 0.8);
+        backdrop-filter: blur(10px);
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .logo span {
+        color: var(--primary);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        position: relative;
+        padding: 5px 0;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary);
+        transition: width 0.3s;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .hamburger {
+        display: none;
+        cursor: pointer;
+      }
+
+      .hamburger div {
+        width: 25px;
+        height: 3px;
+        background-color: var(--text);
+        margin: 5px;
+        transition: all 0.3s;
+      }
+
+      section {
+        padding: 100px 50px;
+        position: relative;
+      }
+
+      .section-title {
+        font-size: 3rem;
+        margin-bottom: 50px;
+        text-align: center;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s;
+      }
+
+      .section-title.in-view::after {
+        transform: scaleX(1);
+      }
+
+      .about-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        flex-wrap: wrap;
+      }
+
+      .about-text {
+        flex: 1;
+        min-width: 300px;
+        opacity: 0;
+        transform: translateX(-50px);
+        transition: all 0.8s;
+      }
+
+      .about-text.in-view {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .about-image {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+        opacity: 0;
+        transform: translateX(50px);
+        transition: all 0.8s;
+      }
+
+      .about-image.in-view {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .image-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .main-image {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        transform: rotate(-5deg);
+        transition: transform 0.5s;
+      }
+
+      .image-wrapper:hover .main-image {
+        transform: rotate(0deg) scale(1.05);
+      }
+
+      .image-deco {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 3px solid var(--primary);
+        border-radius: 10px;
+        top: 20px;
+        left: 20px;
+        z-index: -1;
+        transition: all 0.5s;
+      }
+
+      .image-wrapper:hover .image-deco {
+        top: 15px;
+        left: 15px;
+      }
+
+      .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 50px;
+      }
+
+      .skill-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 30px;
+        width: 200px;
+        text-align: center;
+        transition: all 0.3s;
+        opacity: 0;
+        transform: translateY(50px);
+      }
+
+      .skill-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .skill-card:nth-child(1) {
+        transition-delay: 0.1s;
+      }
+      .skill-card:nth-child(2) {
+        transition-delay: 0.2s;
+      }
+      .skill-card:nth-child(3) {
+        transition-delay: 0.3s;
+      }
+      .skill-card:nth-child(4) {
+        transition-delay: 0.4s;
+      }
+      .skill-card:nth-child(5) {
+        transition-delay: 0.5s;
+      }
+
+      .skill-card:hover {
+        transform: translateY(-10px) !important;
+        box-shadow: 0 10px 30px rgba(255, 45, 117, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .skill-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--primary);
+      }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+      }
+
+      .project-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s;
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      .project-card.in-view {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .project-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s;
+      }
+
+      .project-content {
+        padding: 20px;
+      }
+
+      .project-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .project-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .project-link {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: color 0.3s;
+      }
+
+      .project-link:hover {
+        color: var(--primary);
+      }
+
+      .project-card:hover {
+        transform: translateY(-10px) scale(1.03) !important;
+        box-shadow: 0 15px 40px rgba(255, 45, 117, 0.3);
+      }
+
+      .project-card:hover .project-image {
+        transform: scale(1.1);
+      }
+
+      .contact-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+        color: var(--text);
+        font-family: inherit;
+        transition: all 0.3s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 10px rgba(255, 45, 117, 0.5);
+      }
+
+      textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+      }
+
+      .submit-btn {
+        background: var(--primary);
+        color: var(--text);
+        border: none;
+        padding: 15px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .submit-btn:hover {
+        background: var(--accent);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 45, 117, 0.3);
+      }
+
+      footer {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 30px 0;
+        text-align: center;
+        position: relative;
+      }
+
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .social-link {
+        color: var(--text);
+        font-size: 1.5rem;
+        transition: all 0.3s;
+      }
+
+      .social-link:hover {
+        color: var(--primary);
+        transform: translateY(-5px) scale(1.2);
+      }
+
+      .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        color: var(--text);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        font-size: 1.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        z-index: 99;
+      }
+
+      .back-to-top.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .back-to-top:hover {
+        background: var(--accent);
+        transform: translateY(-5px);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.2;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0.3;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.2;
+        }
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(180deg);
+        }
+        100% {
+          transform: translateY(0) rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 3rem;
+        }
+
+        .tagline {
+          font-size: 1.2rem;
+        }
+
+        .nav-links {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 80px);
+          background: var(--secondary);
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 40px;
+          transition: all 0.5s;
+        }
+
+        .nav-links.active {
+          left: 0;
+        }
+
+        .hamburger {
+          display: block;
+        }
+
+        .hamburger.active div:nth-child(1) {
+          transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active div:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger.active div:nth-child(3) {
+          transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        section {
+          padding: 80px 20px;
+        }
+
+        .section-title {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <nav>
+      <a href="#" class="logo">zxc.Наташа<span>.</span></a>
+      <div class="nav-links">
+        <a href="#about">Обо мне</a>
+        <a href="#skills">Навыки</a>
+        <a href="#projects">Проекты</a>
+        <a href="#contact">Контакты</a>
+      </div>
+      <div class="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </nav>
+
+    <header>
+      <div class="hero-bg"></div>
+      <div class="particles" id="particles"></div>
+      <h1>Бренд Наташи</h1>
+      <p class="tagline">
+        Бренд одежды в Подольске, наташа еще не придумала название))
+      </p>
+      <a href="#contact" class="btn">Связаться</a>
+    </header>
+
+    <section id="about">
+      <h2 class="section-title">Обо мне</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>Я наташа, люблю антона а что еще?))</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2 class="section-title">Мои навыки</h2>
+      <div class="skills-container">
+        <div class="skill-card">
+          <div class="skill-icon">
+            <i class="fab fa-html5"></i>
+          </div>
+          <h3>Лежать на диване</h3>
+          <p>Профессинольно смотрю тик ток на диване 😹</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">
+            <i class="fab fa-css3-alt"></i>
+          </div>
+          <h3>Ссориться c сродителями </h3>
+          <p>хз че писать, просто не повезло\\\</p>
+        </div>
+        
+         
+        <div class="skill-card">
+          <div class="skill-icon">
+            <i class="fab fa-react"></i>
+          </div>
+          <h3>Резаться</h3>
+          <p>Я беру канцелярский нож и правлю своё тело...</p>
+        </div>
+       
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title">Мои проекты</h2>
+      <div class="projects-grid">
+        <div class="project-card">
+        
+          <div class="project-content">
+            <h3 class="project-title">А уменя нет работ, хуй сосите😘😘😘😘</h3>
+            <p>Но возможно работы тут скоро появятся, хз</p>
+           
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Связаться со мной</h2>
+      <form class="contact-form">
+        <div class="form-group">
+          <label for="name">Имя</label>
+          <input type="text" id="name" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="message">Сообщение</label>
+          <textarea id="message" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Отправить</button>
+      </form>
+    </section>
+
+    <footer>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+      </div>
+      <p>&copy; 2025 Наташа. Все права защищены. С лбовью "Антон"</p>
+    </footer>
+
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+    <script>
+      // Кастомный курсор
+      const cursor = document.querySelector(".cursor");
+      const cursorFollower = document.querySelector(".cursor-follower");
+
+      document.addEventListener("mousemove", (e) => {
+        cursor.style.left = e.clientX + "px";
+        cursor.style.top = e.clientY + "px";
+
+        setTimeout(() => {
+          cursorFollower.style.left = e.clientX + "px";
+          cursorFollower.style.top = e.clientY + "px";
+        }, 100);
+      });
+
+      // Эффект при наведении на ссылки
+      const links = document.querySelectorAll(
+        "a, button, .btn, .project-card, .skill-card"
+      );
+
+      links.forEach((link) => {
+        link.addEventListener("mouseenter", () => {
+          cursor.style.transform = "translate(-50%, -50%) scale(2)";
+          cursor.style.backgroundColor = "rgba(255, 45, 117, 0.3)";
+          cursorFollower.style.transform = "translate(-50%, -50%) scale(3)";
+          cursorFollower.style.backgroundColor = "rgba(0, 240, 255, 0.3)";
+        });
+
+        link.addEventListener("mouseleave", () => {
+          cursor.style.transform = "translate(-50%, -50%) scale(1)";
+          cursor.style.backgroundColor = "rgba(255, 45, 117, 0.5)";
+          cursorFollower.style.transform = "translate(-50%, -50%) scale(1)";
+          cursorFollower.style.backgroundColor = "var(--accent)";
+        });
+      });
+
+      // Частицы в хедере
+      const particlesContainer = document.getElementById("particles");
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+
+        const size = Math.random() * 5 + 2;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 10;
+        const duration = Math.random() * 20 + 10;
+
+        particlesContainer.appendChild(particle);
+      }
+
+      // Анимация при скролле
+      const observerOptions = {
+        threshold: 0.1,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+
+            if (entry.target.classList.contains("section-title")) {
+              entry.target.classList.add("in-view");
+            }
+
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      const animatedElements = document.querySelectorAll(
+        ".about-text, .about-image, .skill-card, .project-card, .section-title"
+      );
+      animatedElements.forEach((el) => observer.observe(el));
+
+      // Кнопка "Наверх"
+      const backToTop = document.querySelector(".back-to-top");
+
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 300) {
+          backToTop.classList.add("active");
+        } else {
+          backToTop.classList.remove("active");
+        }
+      });
+
+      // Мобильное меню
+      const hamburger = document.querySelector(".hamburger");
+      const navLinks = document.querySelector(".nav-links");
+
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("active");
+        navLinks.classList.toggle("active");
+      });
+
+      // Плавная прокрутка
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          if (this.getAttribute("href") === "#") return;
+
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            window.scrollTo({
+              top: target.offsetTop - 80,
+              behavior: "smooth",
+            });
+
+            // Закрываем меню на мобильных устройствах
+            if (navLinks.classList.contains("active")) {
+              hamburger.classList.remove("active");
+              navLinks.classList.remove("active");
+            }
+          }
+        });
+      });
+
+      // Эффект параллакса для фона
+      window.addEventListener("scroll", () => {
+        const scrollPosition = window.pageYOffset;
+        const heroBg = document.querySelector(".hero-bg");
+      });
+    </script>
+  </body>
+</html>
